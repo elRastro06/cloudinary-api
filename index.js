@@ -4,7 +4,7 @@ const cloudinary = require('./cloudinary');
 
 // CONFIGURE EXPRESS
 const app = express();
-const port = 5000;
+const port = 5004;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
