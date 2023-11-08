@@ -6,6 +6,8 @@ const multer = require("multer");
 const storage = multer.memoryStorage(); // Puedes cambiarlo según tus necesidades
 const upload = multer({ storage: storage });
 
+const watermarkURL = "https://github.com/elRastro06/cloudinary-api/blob/main/watermark.png?raw=true";
+
 
 // CONFIGURE EXPRESS
 const app = express();
@@ -32,7 +34,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
     const { productName, imageName } = req.body;
     const imageBinaryData = req.file;    
 
-    console.log(productName  + " " + imageName);
+    console.log(productName  + "/" + imageName);
 
     if(imageName && productName && imageBinaryData){
         
@@ -44,18 +46,38 @@ app.post('/upload', upload.single('image'), (req, res) => {
             upload_preset: upload_preset_signed,
             overwrite: true
         };
+
+        // UPLOAD IMAGE WITHOUT WATERMARK
     
         cloudinary.uploader.upload('data:image/png;base64,' + imageBase64, options).then((result) => {
-            console.log("success upload");
-            res.json({
-                message: "success",
-                secure_url: result.secure_url,
-                url: result.url
-            });
+            console.log("success upload without watermark");
+
+            const imageWithWatermark = 'https://quickchart.io/watermark' +
+            '?mainImageUrl=' + result.secure_url +
+            '&markImageUrl=' + watermarkURL +
+            '&markRatio=0.25' + 
+            '&opacity=0.5';
+
+
+            // UPLOAD IMAGE WITH WATERMARK
+
+            cloudinary.uploader.upload(imageWithWatermark, options).then((result) => {
+                console.log("success upload with watermark");
+    
+                res.json({
+                    message: "success",
+                    secure_url: result.secure_url,
+                    url: result.url
+                });
+            })
+
         }).catch((error) => {
             console.error(error);
             res.status(500).json({ err: 'Something went wrong' });
         });
+
+
+
 
     }else{
         res.status(500).json({ err: 'Missing required fields' });
