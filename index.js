@@ -9,7 +9,7 @@ const upload = multer({ storage: storage });
 
 // CONFIGURE EXPRESS
 const app = express();
-const port = 5004   ;
+const port = 5004;
 
 
 // use in app x-www-form-urlencoded
