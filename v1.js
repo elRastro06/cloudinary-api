@@ -52,8 +52,14 @@ app.post('/images', upload.single('image'), (req, res) => {
 
                 res.json({
                     message: "success",
-                    secure_url: result.secure_url,
-                    url: result.url
+                    image:
+                    {
+                        public_id: result.public_id,
+                        folder: result.folder,
+                        secure_url: result.secure_url,
+                        url: result.url
+                    }
+
                 });
             })
 
@@ -109,10 +115,10 @@ app.get('/images', (req, res) => {
             .execute()
             .then((result) => {
                 console.log("success get");
-                
+
 
                 res.json({
-                    message: result.total_count > 0? "success" : "not found",
+                    message: result.total_count > 0 ? "success" : "not found",
                     total_count: result.total_count,
                     resources: result.resources.map(resource => {
                         return {
