@@ -40,8 +40,9 @@ app.post('/images', upload.single('image'), (req, res) => {
             const imageWithWatermark = 'https://quickchart.io/watermark' +
                 '?mainImageUrl=' + result.secure_url +
                 '&markImageUrl=' + watermarkURL +
-                '&markRatio=0.25' +
-                '&opacity=0.5';
+                '&markRatio=0.6' +
+                '&opacity=0.3' +
+                '&position=center';
 
 
             // UPLOAD IMAGE WITH WATERMARK
