@@ -7,6 +7,7 @@ const port = 5004;
 
 // use in app x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 
 app.listen(port, () => {
