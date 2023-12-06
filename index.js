@@ -1,5 +1,6 @@
 const express = require('express');
 const v1 = require('./v1.js');
+const v2 = require('./v2.js');
 const cors = require('cors');
 
 
@@ -18,3 +19,4 @@ app.listen(port, () => {
 });
 
 app.use("/v1", v1);
+app.use("/v2", v2);
