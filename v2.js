@@ -31,9 +31,9 @@ app.post('/images', upload.single('image'), async (req, res) => {
             .max_results(30)
             .execute();
 
-        if(response.total_count > 0){
+        if (response.total_count > 0) {
             imageName = (parseInt(response.resources[0].public_id.split("/")[1]) + 1).toString();
-        }else{
+        } else {
             imageName = "1";
         }
 
@@ -103,6 +103,30 @@ app.delete('/images', (req, res) => {
     if (productName && imageName) {
 
         cloudinary.uploader.destroy(productName + '/' + imageName).then((result) => {
+            console.log("success delete");
+
+            res.json({
+                message: "success",
+                result
+            });
+        }).catch((error) => {
+            console.error(error);
+            res.status(500).json({ err: 'Something went wrong' });
+        });
+
+    }
+
+});
+
+
+app.delete('/folder', (req, res) => {
+    console.log(req.body);
+
+    const productId = req.body.productId;
+
+    if (productId) {
+
+        cloudinary.api.delete_folder("/" + productId).then((result) => {
             console.log("success delete");
 
             res.json({
