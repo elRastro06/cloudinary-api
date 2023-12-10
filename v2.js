@@ -16,17 +16,17 @@ const upload_preset_unsigned = process.env.UPLOAD_PRESET_UNSIGNED;
 
 app.post('/images', upload.single('image'), async (req, res) => {
 
-    const productName = req.body.productName;
+    const productId = req.body.productId;
     const imageBinaryData = req.file;
 
-    if (productName && imageBinaryData) {
+    if (productId && imageBinaryData) {
 
         // GET THE HIGHEST NUMBER OF IMAGE NAME OF THE FOLDER
         var imageName = 0;
         var response = {};
 
         response = await cloudinary.search
-            .expression(`folder:${productName}/*`)
+            .expression(`folder:${productId}/*`)
             .sort_by('public_id', 'desc')
             .max_results(30)
             .execute();
@@ -44,7 +44,7 @@ app.post('/images', upload.single('image'), async (req, res) => {
         const imageBase64 = req.file.buffer.toString('base64');
 
         const options = {
-            folder: productName,
+            folder: productId,
             public_id: imageName,
             upload_preset: upload_preset_signed,
             overwrite: true
@@ -97,12 +97,12 @@ app.post('/images', upload.single('image'), async (req, res) => {
 app.delete('/images', (req, res) => {
     console.log(req.body);
 
-    const productName = req.body.productName;
+    const productId = req.body.productId;
     const imageName = req.body.imageName;
 
-    if (productName && imageName) {
+    if (productId && imageName) {
 
-        cloudinary.uploader.destroy(productName + '/' + imageName).then((result) => {
+        cloudinary.uploader.destroy(productId + '/' + imageName).then((result) => {
             console.log("success delete");
 
             res.json({
@@ -119,40 +119,52 @@ app.delete('/images', (req, res) => {
 });
 
 
-app.delete('/folder', (req, res) => {
+app.delete("/folder", (req, res) => {
     console.log(req.body);
-
+  
     const productId = req.body.productId;
-
+  
     if (productId) {
-
-        cloudinary.api.delete_folder("/" + productId).then((result) => {
-            console.log("success delete");
-
-            res.json({
+      // delete all images of the folder
+      cloudinary.api
+        .delete_resources_by_prefix(productId)
+        .then((result) => {
+          console.log("success delete");
+  
+          // delete the folder
+          cloudinary.api
+            .delete_folder("/" + productId)
+            .then((result) => {
+              console.log("success delete");
+  
+              res.json({
                 message: "success",
-                result
+                result,
+              });
+            })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).json({ err: "Something went wrong" });
             });
-        }).catch((error) => {
-            console.error(error);
-            res.status(500).json({ err: 'Something went wrong' });
+        })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).json({ err: "Something went wrong" });
         });
-
     }
-
-});
+  });
 
 app.get('/images', (req, res) => {
 
     console.log(`https://api.cloudinary.com/v1_1/${cloudinary.config().cloud_name}/resources/image`);
 
-    const productName = req.query.productName;
+    const productId = req.query.productId;
     const imageName = req.query.imageName;
 
-    if (productName && imageName) {
+    if (productId && imageName) {
 
         cloudinary.search
-            .expression("public_id:" + productName + '/' + imageName)
+            .expression("public_id:" + productId + '/' + imageName)
             .sort_by('public_id', 'desc')
             .max_results(30)
             .execute()
