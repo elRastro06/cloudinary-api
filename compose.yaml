@@ -1,0 +1,7 @@
+version: '3.1'
+services:
+  cloudinary:
+    build: .
+    container_name: cloudinary
+    ports:
+      - 5004:5004
