@@ -1,6 +1,4 @@
 import express from "express";
-import objectApp from "./object.mjs";
-import userApp from "./user.mjs";
 import cors from "cors";
 import cloudinaryApp from "./cloudinary.mjs";
 
@@ -21,5 +19,3 @@ app.listen(port, () => {
 });
 
 app.use("/", cloudinaryApp);
-app.use("/object", objectApp);
-app.use("/user", userApp);
